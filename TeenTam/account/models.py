@@ -6,9 +6,6 @@ from rest_framework.authtoken.models import Token
 from django.utils import timezone
 
 
-# Create your models here.
-
-
 class User(AbstractUser):
     # 필수 기입 필드
     email = models.EmailField(max_length=254, unique=True)
@@ -22,8 +19,3 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-
-
-# # Create Token for each user
-# for user in User.objects.all():
-#     Token.objects.get_or_create(user=user)

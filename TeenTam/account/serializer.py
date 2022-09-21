@@ -32,7 +32,8 @@ class SignupSerializer(serializers.ModelSerializer):
         return super(SignupSerializer, self).create(validated_data)
 
 class LoginSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(required = True, write_only = True)
+    
+    email = serializers.CharField(required = True, write_only = True)
     password = serializers.CharField(
         required = True,
         write_only = True,
@@ -45,26 +46,21 @@ class LoginSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
 
-        id = data.get('id')
-        password = data.get('password')
+        email = data["email"]
+        password = data["password"]
 
-        if User.objects.filter(id=id).exists():
-            user = User.objects.get(id=id)
+        if email is None or password is None :
+            # blank email or password
+            raise serializers.ValidationError("email / password required")
 
-            if not check_password(password, user.username):
-                raise serializers.ValidationError("wrong password")
-        
-        else:
+        user = User.objects.filter(email=email).first()
+
+        if user is None:
+            # not registered email
             raise serializers.ValidationError("not registered user")
+
+        if not check_password(password, user.password):
+            # wrong password
+            raise serializers.ValidationError("wrong password")
         
-        token = RefreshToken.for_user(user)
-        refresh = str(token)
-        access = str(token.access_token)
-
-        data = {
-            'user' : user,
-            'refresh' : refresh,
-            'access' : access,
-        }
-
         return data
