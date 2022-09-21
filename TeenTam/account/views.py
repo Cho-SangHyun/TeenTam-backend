@@ -1,7 +1,10 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from .models import User
+from .serializer import UserSerializer
 from django.conf import settings
 from django.shortcuts import render 
 from django.contrib.auth.hashers import check_password
@@ -19,27 +22,42 @@ class AccountViewSet(APIView):
 class LoginViewSet(APIView):
     def post(self, request):
 
-        username = request.GET.get["username"]
-        password = request.GET.get["password"]
-        # blanck username or password
-        if username is None or password is None :
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        if email is None or password is None :
+        # blanck email or password
             return Response({
-                "message" : "username / password required",   
+                "message" : "email / password required",   
             }, status = status.HTTP_400_BAD_REQUEST)
-        # not registered username
-        user = User.objects.get(username = username)
+        user = User.objects.get(email = email)
+
         if user is None:
+        # not registered email
             return Response({
                 "message" : "check username",
             }, status = status.HTTP_404_NOT_FOUND)
-        # wrong password
+
         if not check_password(password, user.password):
+        # wrong password
             return Response({
                 "message":"wrong password",
             }, status = status.HTTP_400_BAD_REQUEST)
 
-        response = Response(status=status.HTTP_200_OK)  
-        return authenticate.jwt_login(response, user)
+
+        token = TokenObtainPairSerializer.get_token(user)
+        refresh_token = str(token)
+        access_token = str(token.access_token)
+        response = Response({
+            "user" : UserSerializer(user).data,
+            "message" : "login success",
+            "jwt_token" : {
+                "access_token" : access_token,
+                "refresh_token" : refresh_token,
+            },
+        }, status = status.HTTP_200_OK)
+        
+        return response
 
 
 
@@ -73,12 +91,10 @@ class RefreshViewSet(APIView):
                 "message": "user is inactive"
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        access_token = generate_access_token(user)
+        # access_token = generate_access_token(user)
         
-        return Response(
-            {
-                'access_token': access_token,
-            }
-        )
+        return Response(status=status.HTTP_200_OK)
         
         
+# class SigninViewSet(APIView):
+#     def post(self, request):
