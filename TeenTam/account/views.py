@@ -1,17 +1,16 @@
-from rest_framework import status, permissions
+from rest_framework import permissions
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.conf import settings
 from django.shortcuts import render 
 from .models import User
 from .serializer import LoginSerializer, SignupSerializer
-from .token import CreateToken
+from .token import BlacklistToken, CreateToken
 
 
 class AccountViewSet(APIView):
+    
     def get(self, request):
         user = User.objects.all().first()
+
         return render(request, "test.html")
 
 
@@ -23,6 +22,7 @@ class SignupViewSet(APIView):
         serializer.save()
         user = User.objects.get(email = request.data["email"])
         response = CreateToken(user)
+
         return response
 
 
@@ -33,8 +33,10 @@ class LoginViewSet(APIView):
         serializer.is_valid(raise_exception=True)
         user = User.objects.get(email = request.data["email"])
         response = CreateToken(user)
+
         return response
     
+
 class LogoutViewSet(APIView):
     """
     <로그아웃 로직>
@@ -46,8 +48,6 @@ class LogoutViewSet(APIView):
     permission_classes = [permissions.IsAuthenticated] # 인증된 유저만 접근 가능
 
     def post(self, request):
-        token = RefreshToken(request.data["refresh_token"])
-        token.blacklist() # JWT Blacklist 등록
-        return Response({
-            "message" : "logout success"
-        }, status = status.HTTP_202_ACCEPTED)
+        
+        response = BlacklistToken(request)
+        return response

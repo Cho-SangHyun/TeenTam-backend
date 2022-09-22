@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth.hashers import check_password, make_password
-from rest_framework_simplejwt.tokens import RefreshToken
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +30,7 @@ class SignupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data.get('password'))
         return super(SignupSerializer, self).create(validated_data)
+
 
 class LoginSerializer(serializers.ModelSerializer):
     
