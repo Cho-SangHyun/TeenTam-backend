@@ -1,3 +1,4 @@
+from pyexpat import model
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth.hashers import check_password, make_password
@@ -63,5 +64,60 @@ class LoginSerializer(serializers.ModelSerializer):
         if not check_password(password, user.password):
             # wrong password
             raise serializers.ValidationError("wrong password")
+        
+        return data
+
+
+class FindEmailSerializer(serializers.ModelSerializer):
+
+    email = serializers.CharField(required = True, write_only = True)
+    phone_number = serializers.CharField(required = True, write_only = True)
+
+    class Meta:
+        
+        model = User
+        fields = ["phone_number", "birth"]
+
+    def validate(self, data):
+        
+        ph_num = data["phone_number"]
+        birth = data["birth"]
+
+        user = User.objects.filter(phone_number = ph_num).first()
+
+        if user is None:
+            # 등록된 전화번호 없음
+            raise serializers.ValidationError("not registered phone number")
+        
+        if user.birth is not birth:
+            # 전화번호, 생년월일 불일치
+            raise serializers.ValidationError("wrong birth")
+        
+        return data
+
+
+class FindPasswordSerializer(serializers.ModelSerializer):
+
+
+    email = serializers.CharField(required = True, write_only = True)
+
+    class Meta:
+        
+        model = User
+        fields = ["email", "birth"]
+    
+    def validate(self, data):
+
+        email = data["email"]
+        birth = data["birth"]
+        user = User.objects.filter(email = email, birth = birth).first()
+        print(birth)
+        print(user.birth)
+
+        if user is None:
+            raise serializers.ValidationError("not registered email")
+        
+        if user.birth != birth:
+            raise serializers.ValidationError("wrong birth")
         
         return data

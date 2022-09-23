@@ -1,8 +1,5 @@
-from datetime import date
-from distutils.command.upload import upload
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from rest_framework.authtoken.models import Token
 from django.utils import timezone
 
 
