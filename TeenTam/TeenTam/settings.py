@@ -30,43 +30,45 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+USE_TZ = True
+TIME_ZONE = 'Asia/Seoul'
 
 # Application definition
 
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    #django-rest-framework
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    
+    #cors
     'corsheaders',
-    'account', # app
-    'web', # app
+
+    #app
+    'account',
+    'boards', 
+    'web',
 ]
 
 
 REST_FRAMEWORK = {
-    # REST FRAMEWORK authentication schemes
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.BasicAuthentication',
-    #     'rest_framework.authentication.SessionAuthentication',
-    #     'rest_framework.authentication.TokenAuthentication',  # Using token for auth
-    # ],
-
     # JWT token authentication
     # https://jpadilla.github.io/django-rest-framework-jwt/
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication', 
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated', # can access authenticated users
         'rest_framework.permissions.AllowAny', # can access all users
-        'rest_framework.permissions.IsAdminUser', # cans access only admin
+        # 'rest_framework.permissions.IsAdminUser', # cans access only admin
+        # 'rest_framework.permissions.IsAuthenticated', # can access authenticated users
     ),
 }
 
@@ -103,6 +105,15 @@ SIMPLE_JWT = {
     # 'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     # 'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+
+# SMTP Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_POST = '587'
+EMAIL_HOST_USER = 'kccce6567'
+EMAIL_HOST_PASSWORD = 'shquddn970508!'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 

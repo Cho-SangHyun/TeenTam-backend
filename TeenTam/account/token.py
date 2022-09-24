@@ -6,6 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 def CreateToken(user):
+
     token = TokenObtainPairSerializer.get_token(user) # Create JWT
     refresh_token = str(token)
     access_token = str(token.access_token)
@@ -19,7 +20,9 @@ def CreateToken(user):
     }, status = status.HTTP_200_OK)
     return response
 
+
 def BlacklistToken(request):
+
     token = RefreshToken(request.data["refresh_token"])
     token.blacklist() # JWT Blacklist 등록
     response =  Response({
