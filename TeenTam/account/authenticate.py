@@ -31,13 +31,15 @@ class GMailClient:
     def __init__(self, username: str, password: str) -> None:
         self.port = 587
         # ex. example@gmail.com
-        self.username = "kccce6567@gmail.com"
+        self.username = username
         # 16digit app password
-        self.password = "hlxwkcichwvnxcmz"
+        self.password = password
 
 
     def send_email(self, email: str, subject: str, content: str) -> None:
+        
         # login
+
         with smtplib.SMTP("smtp.gmail.com", self.port) as smtp:
             smtp.starttls()
             smtp.login(self.username, self.password)
