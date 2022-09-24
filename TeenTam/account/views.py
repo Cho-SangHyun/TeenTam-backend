@@ -1,84 +1,104 @@
-from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework import permissions, status
 from rest_framework.response import Response
-from .models import User
-from django.conf import settings
+from rest_framework.views import APIView
 from django.shortcuts import render 
-from django.contrib.auth.hashers import check_password
-from . import token, authenticate
-import jwt
+from .models import User
+from .serializer import FindEmailSerializer, FindPasswordSerializer, LoginSerializer, SignupSerializer
+from .token import BlacklistToken, CreateToken
+from .authenticate import ChangePasswordEmail, GMailClient, TemporaryPassword
+from django.contrib.auth.hashers import make_password
+
 
 
 class AccountViewSet(APIView):
+
     def get(self, request):
         user = User.objects.all().first()
-        tok = token.CreateToken(user)
-        print(tok)
+
         return render(request, "test.html")
 
+
+class SignupViewSet(APIView):
+
+    def post(self, request):
+        serializer = SignupSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user = User.objects.get(email = request.data["email"])
+        response = CreateToken(user)
+
+        return response
+
+
 class LoginViewSet(APIView):
+
+    def post(self, request):
+        serializer = LoginSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        user = User.objects.get(email = request.data["email"])
+        response = CreateToken(user)
+
+        return response
+    
+
+class LogoutViewSet(APIView):
+    """
+    <로그아웃 로직>
+
+    토큰을 블랙리스트 등록함으로써 유저 인증 토큰 차단.
+    JWT의 경우 DB에서 인증을 관리하는 것이 아니므로,
+    토큰 자체를 차단함으로써 로그아웃 구현.
+    """
+    permission_classes = [permissions.IsAuthenticated] # 인증된 유저만 접근 가능
+
+    def post(self, request):
+        
+        response = BlacklistToken(request)
+        return response
+
+
+class FindEmailViewSet(APIView):
+
     def post(self, request):
 
-        username = request.GET.get["username"]
-        password = request.GET.get["password"]
-        # blanck username or password
-        if username is None or password is None :
-            return Response({
-                "message" : "username / password required",   
-            }, status = status.HTTP_400_BAD_REQUEST)
-        # not registered username
-        user = User.objects.get(username = username)
-        if user is None:
-            return Response({
-                "message" : "check username",
-            }, status = status.HTTP_404_NOT_FOUND)
-        # wrong password
-        if not check_password(password, user.password):
-            return Response({
-                "message":"wrong password",
-            }, status = status.HTTP_400_BAD_REQUEST)
+        serializer = FindEmailSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        ph_num = request.data["phone_number"]
+        user_email = User.objects.get(phone_number = ph_num).only("email")
+        response = Response({
+            "message" : "email find success",
+            "email" : user_email,
+        }, status = status.HTTP_200_OK)
 
-        response = Response(status=status.HTTP_200_OK)  
-        return authenticate.jwt_login(response, user)
+        return response
 
 
+class FindPasswordViewSet(APIView):
 
-class RefreshViewSet(APIView):
     def post(self, request):
-        refresh_token = request.COOKIES.get('refreshtoken')
-        
-        if refresh_token is None:
-            return Response({
-                "message": "Authentication credentials were not provided."
-            }, status=status.HTTP_403_FORBIDDEN)
-        
-        try:
-            payload = jwt.decode(
-                refresh_token, settings.REFRESH_TOKEN_SECRET, algorithms=['HS256']
-            )
 
-        except:
-            return Response({
-                "message": "expired refresh token, please login again."
-            }, status=status.HTTP_403_FORBIDDEN)
+        serializer = FindPasswordSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
         
-        user = User.objects.filter(id=payload['user_id']).first()
+        email = request.data["email"]
+        user = User.objects.get(email = email)
+
+        #임시 비밀번호 전송
+        temp_password = TemporaryPassword()
+        subject = f"from.TeenTam, {user.username}님, 임시 비밀번호 입니다."
+        content = f"{user.username}님의 임시 비밀번호는 [{temp_password}] 입니다."
+
+        email_username = "kccce6567@gmail.com"
+        email_password = "hlxwkcichwvnxcmz"
+        sendmail = GMailClient(email_username, email_password)
+        sendmail.send_email(email, subject, content)
         
-        if user is None:
-            return Response({
-                "message": "user not found"
-            }, status=status.HTTP_400_BAD_REQUEST)
-        if not user.is_active:
-            return Response({
-                "message": "user is inactive"
-            }, status=status.HTTP_400_BAD_REQUEST)
+        new_password = make_password(temp_password)
+        user.password = new_password
+        user.save()
         
-        access_token = generate_access_token(user)
-        
-        return Response(
-            {
-                'access_token': access_token,
-            }
-        )
-        
-        
+        response = Response({
+            "message" : "new password issued, check the email"
+        }, status = status.HTTP_200_OK)
+
+        return response

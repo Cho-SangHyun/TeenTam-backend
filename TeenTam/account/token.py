@@ -1,29 +1,28 @@
 from rest_framework.response import Response
-import jwt, datetime
+from rest_framework import status
+from .serializer import UserSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 def CreateToken(user):
+    token = TokenObtainPairSerializer.get_token(user) # Create JWT
+    refresh_token = str(token)
+    access_token = str(token.access_token)
+    response = Response({
+        "user" : UserSerializer(user).data,
+        "message" : "login success",
+        "jwt_token" : {
+            "access_token" : access_token,
+            "refresh_token" : refresh_token,
+        },
+    }, status = status.HTTP_200_OK)
+    return response
 
-    payload = {
-      'id' : user.id,
-      'exp' : datetime.datetime.now() + datetime.timedelta(minutes=60), # Expire time 60m
-      'iat' : datetime.datetime.now() # Issued at(created time)
-    }
-
-    token = jwt.encode(payload,"secretJWTkey",algorithm="HS256") # Creating Token by payload
-    return token
-
-def GetToken(request):
-    token = request.GET.get("jwt")
-    payload = jwt.decode(token, 'secretJWTkey', algorithms=['HS256'])
-    return payload
-
-def CheckToken(request):
-    token = request.COOKIES.get('jwt')
-    if not token:
-        return False
-    try:
-        payload = jwt.decode(token, 'secretJWTkey', algorithms=['HS256'])
-    except jwt.ExpiredSignatureError:
-        return False
-        
-    return True   
+def BlacklistToken(request):
+    token = RefreshToken(request.data["refresh_token"])
+    token.blacklist() # JWT Blacklist 등록
+    response =  Response({
+        "message" : "logout success"
+    }, status = status.HTTP_202_ACCEPTED)
+    return response
