@@ -5,7 +5,9 @@ from . import views
 app_name = "boards"
 
 urlpatterns = [
-    path('<int:boards_ctg>/',views.BoardListViewSet.as_view(),name="boards_list"),
-    # path('find-email', views.FindEmailViewSet.as_view(), name="find-email"),
-    # path('find-password', views.FindPasswordViewSet.as_view(), name="find-password"),
+    path('boards-category/<int:boards_ctg>/',views.BoardListViewSet.as_view(),name="boards_list"), # 게시판 
+    path('<int:boards_id>/',views.BoardDetailViewSet.as_view(),name="boards_detail"), # 게시글 상세보기
+    path('create-board/',views.CreateBoardViewSet.as_view(), name="create-board"),
+    path('create-board-category/',views.CreateBoardCategoryViewSet.as_view(), name="create-board-category"),  
+    
 ]
