@@ -13,15 +13,21 @@ class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'username', 'birth']
+        fields = ['email', 'password', 'username', 'birth', 'phone_number']
         # fields += ['postcode', 'address','detail_address', 'phone_number'] # 추가 기입 사항
 
     def validate(self, data):
 
+        # 이메일 중복 확인
         email = data.get('email')
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("user email already exists")
 
+        # 전화번호 중복 확인
+        phone_number = data.get('phone_number')
+        if User.objects.filter(phone_number = phone_number).exists():
+            raise serializers.ValidationError("user phone number already exists")
+            
         return data
 
     def create(self, validated_data):
@@ -41,10 +47,7 @@ class UsernameSerializer(serializers.ModelSerializer):
     def validate(self, data):
 
         username = data["username"]
-
-        user = User.objects.filter(username=username).first()
-
-        if user is not None:
+        if User.objects.filter(username=username).exists():
             raise serializers.ValidationError("username already exists")
 
         return data

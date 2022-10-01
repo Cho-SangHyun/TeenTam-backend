@@ -9,5 +9,5 @@ urlpatterns = [
     path('<int:boards_id>/',views.BoardDetailViewSet.as_view(),name="boards_detail"), # 게시글 상세보기
     path('create-board/',views.CreateBoardViewSet.as_view(), name="create-board"),
     path('create-board-category/',views.CreateBoardCategoryViewSet.as_view(), name="create-board-category"),  
-    
+    path('create-comment/', views.CreateCommentsViewSet.as_view(), name="create-comment"),
 ]

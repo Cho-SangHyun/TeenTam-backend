@@ -29,8 +29,8 @@ class Boards(models.Model):
     is_main = models.SmallIntegerField(default=0)
 
     #Foreign key
-    boards_category = models.ForeignKey(BoardCategories, on_delete=models.SET_NULL, null=True)
-    boards_writer = models.ForeignKey(account_models.User, on_delete=models.SET_NULL, null=True)
+    boards_category = models.ForeignKey(BoardCategories, related_name='boards', on_delete=models.SET_NULL, null=True)
+    boards_writer = models.ForeignKey(account_models.User, related_name='boards', on_delete=models.SET_NULL, null=True)
 
 class Comments(models.Model):
     
@@ -41,6 +41,6 @@ class Comments(models.Model):
     like = models.IntegerField(default=0)
     
     #foriegn key
-    comments_board = models.ForeignKey(Boards, on_delete=models.SET_NULL, null = True)
-    comments_writer = models.ForeignKey(account_models.User, on_delete=models.SET_NULL, null=True)
+    comments_board = models.ForeignKey(Boards, related_name='comments', on_delete=models.DO_NOTHING, null=True)
+    comments_writer = models.ForeignKey(account_models.User, related_name='comments', on_delete=models.DO_NOTHING, null = True)
     
