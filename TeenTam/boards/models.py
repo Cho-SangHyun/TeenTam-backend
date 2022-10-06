@@ -44,3 +44,5 @@ class Comments(models.Model):
     comments_board = models.ForeignKey(Boards, related_name='comments', on_delete=models.DO_NOTHING, null=True)
     comments_writer = models.ForeignKey(account_models.User, related_name='comments', on_delete=models.DO_NOTHING, null = True)
     
+    def __str__(self):
+        return self.delete_date

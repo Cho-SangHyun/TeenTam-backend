@@ -1,5 +1,5 @@
 from wsgiref import validate
-from django.forms import CharField
+from django.forms import CharField, IntegerField
 from rest_framework import serializers
 from .models import Boards, Comments, BoardCategories
 
@@ -11,7 +11,7 @@ class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = Comments
-        fields = ['username', 'content', 'comments_writer', 'like', 'pub_date', 'modify_date', 'delete_date']
+        fields = ['id','username', 'content', 'comments_writer', 'like', 'pub_date', 'modify_date', 'delete_date']
 
 
 class BoardCategoriesSerializer(serializers.ModelSerializer):
@@ -35,6 +35,14 @@ class BoardDetailSerializer(serializers.ModelSerializer):
                   'modify_date', 'image_exist', 'like', 'hit', 'comments_num',
                   'is_main', 'boards_category', 'writer_username', 'boards_writer']
 
+    def validate(self, data):
+        
+        delete_date = data['delete_date']
+        if delete_date is not None:
+            raise serializers.ValidationError("this board already deleted")
+        
+        return data
+        
 
 
 class CreateBoardSerializer(serializers.ModelSerializer):
@@ -51,7 +59,16 @@ class CreateBoardSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("wrong category name")
         
         return data
+
+# class DeleteBoardSerializer(serializers.Serializer):
+    
+#     user_id = serializers.IntegerField()
+    
+    
+#     def delete(self, data):
         
+        
+
 
 class CreateBoardCategorySerializer(serializers.ModelSerializer):
     
