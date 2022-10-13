@@ -18,6 +18,7 @@ class Boards(models.Model):
 
     title = models.CharField(max_length=255, null=False)
     content = models.TextField(null=False)
+    
     #null = True or default values
     pub_date = models.DateTimeField(default=timezone.now)
     delete_date = models.DateTimeField(null=True)
@@ -46,3 +47,9 @@ class Comments(models.Model):
     
     def __str__(self):
         return self.delete_date
+    
+class Likes(models.Model):
+    
+    likes_board = models.ForeignKey(Boards, related_name='likes', on_delete=models.DO_NOTHING, null=False)
+    likes_user = models.ForeignKey(account_models.User, related_name='likes', on_delete=models.DO_NOTHING, null=False)
+    

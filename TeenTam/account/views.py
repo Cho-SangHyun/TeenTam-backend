@@ -9,14 +9,6 @@ from .authenticate import GMailClient, TemporaryPassword
 from django.contrib.auth.hashers import make_password
 
 
-class AccountViewSet(APIView):
-
-    def get(self, request):
-        user = User.objects.all().first()
-
-        return render(request, "test.html")
-
-
 class SignupViewSet(APIView):
 
     def post(self, request):
