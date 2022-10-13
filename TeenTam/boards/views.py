@@ -4,9 +4,9 @@ from rest_framework import status
 from django.utils import timezone
 from .models import Boards, Likes
 from .serializer import *
+from datetime import datetime, timedelta
 
-
-# 게시판별 게시글 목록 GET
+# 카테고리별 게시글 목록
 class BoardListViewSet(APIView):
 
     def get(self, request, boards_category):
@@ -37,28 +37,7 @@ class BoardListViewSet(APIView):
         return response
 
 
-class BoardDetailViewSet(APIView):
-
-    def get(self, request, boards_category, boards_id):
-
-        board = Boards.objects.filter(id=boards_id)
-        if board is None:
-            response = Response({
-                "message": "wrong board id"
-            }, status=status.HTTP_404_NOT_FOUND)
-            return response
-
-        serializer = BoardDetailSerializer(board, many=True)
-
-        data = serializer.data
-        response = Response({
-            "data": data
-        }, status=status.HTTP_200_OK)
-        return response
-
 # 게시판 카테고리 생성
-
-
 class CreateBoardCategoryViewSet(APIView):
 
     def post(self, request):
@@ -73,7 +52,7 @@ class CreateBoardCategoryViewSet(APIView):
         return response
 
 
-# 게시글 생성 삭제
+# 게시글 생성
 class CreateBoardViewSet(APIView):
 
     def post(self, request):
@@ -89,7 +68,7 @@ class CreateBoardViewSet(APIView):
 
         return response
 
-
+# 게시글 삭제
 class DeleteBoardsViewSet(APIView):
 
     def delete(self, request, boards_id):
@@ -109,6 +88,82 @@ class DeleteBoardsViewSet(APIView):
             "message": "delete success",
         }, status=status.HTTP_200_OK)
 
+        return response
+
+
+#게시글 상세보기
+class BoardDetailViewSet(APIView):
+
+    def get(self, request, boards_category, boards_id):
+        
+        board = Boards.objects.filter(id=boards_id).first()
+        
+        # 없는 게시글 요청 시
+        if board is None:
+            response = Response({
+                "message": "wrong board id"
+            }, status=status.HTTP_404_NOT_FOUND)
+            return response
+        
+        # 삭제된 게시글 요청 시
+        if board.delete_date is not None:
+            response = Response({
+                "message" : "deleted board id"
+            }, status=status.HTTP_204_NO_CONTENT)
+            return response
+        
+        serializer = BoardDetailSerializer(board)
+        data = serializer.data
+            
+        """
+        조회수 기능 - 토큰 사용
+        매일 00시에 만료되는 토큰에 클라이언트가 조회한 boards_id 저장
+        만약, 조회한 게시글 id가 이미 쿠키에 존재할 경우 hit 증가 X
+        """
+        # 토큰 만료시간 설정, 매일 00시에 만료
+        expire_date, now = datetime.now(), datetime.now()
+        expire_date += timedelta(days=1)
+        expire_date = expire_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        expire_date -= now
+        max_age = expire_date.total_seconds() # 토큰 만료시간
+        
+        cookie_value = request.COOKIES.get('hitboard', '_')
+        
+        if f'_{board.id}_' not in cookie_value:
+            cookie_value += f'{board.id}_'
+            board.hit += 1
+            board.save()
+        
+        response = Response({
+            "data": data
+        }, status=status.HTTP_200_OK)
+        response.set_cookie('hitboard', value=cookie_value, max_age=max_age, httponly=True)
+        
+        return response
+
+
+class ModifyBoardsViewSet(APIView):
+    
+    def post(self, request, boards_id):
+        
+        # 작성자 Validation
+        board = Boards.objects.filter(id=boards_id).first()
+        
+        if board.boards_writer.id != int(request.data['user_id']):
+            response = Response({
+                "message": "bad access (user not allowed)",
+            }, status=status.HTTP_403_FORBIDDEN)
+            return response
+        
+        serializer = ModifyBoardSerializer(board, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        
+        response = Response({
+            "message" : "modified board successfully",
+            "boards_id" : serializer.data['id']
+        })
+        
         return response
 
 
@@ -132,10 +187,9 @@ class DeleteCommentsViewSet(APIView):
 
     def delete(self, request, comments_id):
 
-        user_id = request.data["user_id"]
         comment = Comments.objects.get(id=comments_id)
         # 댓글 삭제시 작성자 확인
-        if comment.comments_writer.id != int(user_id):
+        if comment.comments_writer.id != int(request.data["user_id"]):
             response = Response({
                 "message": "bad access (user not allowed)",
             }, status=status.HTTP_403_FORBIDDEN)
@@ -177,3 +231,4 @@ class BoardsLikeViewSet(APIView):
             "likes": board.like
         }, status=status.HTTP_200_OK)
         return response
+

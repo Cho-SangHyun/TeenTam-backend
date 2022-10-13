@@ -19,6 +19,8 @@ urlpatterns = [
     path('delete-comment/<int:comments_id>/',
          views.DeleteCommentsViewSet.as_view(), name="delete-comment"),
     path('like-board/', views.BoardsLikeViewSet.as_view(), name="like-board"),
+    path('board-modify/<int:boards_id>/', views.ModifyBoardsViewSet.as_view(), name="modify-board"),
+    
     # path('like-comment/', views.CommentsLikeViewSet.as_view(), name="like-comment"),
 
 

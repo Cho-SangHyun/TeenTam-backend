@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Boards, Comments, BoardCategories, Likes
+from datetime import datetime, timedelta
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -33,6 +34,42 @@ class BoardListSerializer(serializers.ModelSerializer):
                   'boards_category', 'image_exist', 'id', 'content', 'comments_num']
 
 
+class ModifyBoardSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        
+        model = Boards
+        fields = ['id', 'title', 'content']
+        
+    def update(self, instance, validated_data):
+        
+        instance.title = validated_data['title']
+        instance.content = validated_data['content']
+        instance.save()
+        
+        return instance
+    
+
+class CreateBoardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Boards
+        fields = ['id', 'boards_category', 'title', 'content', 'boards_writer']
+
+    def validate(self, data):
+
+        category_name = data['boards_category']
+        boards_category = BoardCategories.objects.filter(name=category_name)
+        
+        if boards_category is None:
+            raise serializers.ValidationError("wrong category name")
+
+        return data
+
+
+
+
+
 class BoardDetailSerializer(serializers.ModelSerializer):
 
     comments = CommentsSerializer(many=True, read_only=True)
@@ -54,22 +91,6 @@ class BoardDetailSerializer(serializers.ModelSerializer):
 
         return data
 
-
-class CreateBoardSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Boards
-        fields = ['id', 'boards_category', 'title', 'content', 'boards_writer']
-
-    def validate(self, data):
-
-        category_name = data['boards_category']
-        boards_category = BoardCategories.objects.filter(name=category_name)
-        
-        if boards_category is None:
-            raise serializers.ValidationError("wrong category name")
-
-        return data
 
 
 class CreateBoardCategorySerializer(serializers.ModelSerializer):
