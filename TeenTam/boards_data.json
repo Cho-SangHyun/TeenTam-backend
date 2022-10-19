@@ -1,0 +1,92 @@
+[
+    {
+        "model": "boards.boards",
+        "pk": 132,
+        "fields": {
+            "title": "욕설에 대한 제재 강화 안내",
+            "content": "안녕하세요 틴탐 운영자입니다. 최근 게시글에 욕설을 쓰는 사람이 많아지고 있습니다.",
+            "pub_date": "2022-10-16T09:01:05.785Z",
+            "delete_date": null,
+            "modify_date": null,
+            "image_exist": 0,
+            "like": 0,
+            "hit": 0,
+            "comments_num": 0,
+            "is_main": 0,
+            "boards_category": 8,
+            "boards_writer": 3
+        }
+    },
+    {
+        "model": "boards.boards",
+        "pk": 133,
+        "fields": {
+            "title": "틴탐 개편 안내",
+            "content": "2022년 10월 30일부로 개편 예정입니다",
+            "pub_date": "2022-10-15T09:03:05.785Z",
+            "delete_date": null,
+            "modify_date": null,
+            "image_exist": 0,
+            "like": 0,
+            "hit": 0,
+            "comments_num": 0,
+            "is_main": 0,
+            "boards_category": 8,
+            "boards_writer": 4
+        }
+    },
+    {
+        "model": "boards.boards",
+        "pk": 134,
+        "fields": {
+            "title": "2022/10/15 업데이트 안내",
+            "content": "업데이트 내역",
+            "pub_date": "2022-10-15T09:03:05.785Z",
+            "delete_date": null,
+            "modify_date": null,
+            "image_exist": 0,
+            "like": 0,
+            "hit": 0,
+            "comments_num": 0,
+            "is_main": 0,
+            "boards_category": 8,
+            "boards_writer": 4
+        }
+    },
+    {
+        "model": "boards.boards",
+        "pk": 135,
+        "fields": {
+            "title": "2022/10/01 업데이트 안내",
+            "content": "업데이트 내역",
+            "pub_date": "2022-10-01T09:03:05.785Z",
+            "delete_date": null,
+            "modify_date": null,
+            "image_exist": 0,
+            "like": 0,
+            "hit": 0,
+            "comments_num": 0,
+            "is_main": 0,
+            "boards_category": 8,
+            "boards_writer": 3
+        }
+    },
+    {
+        "model": "boards.boards",
+        "pk": 136,
+        "fields": {
+            "title": "회원가입 약관 변경 안내",
+            "content": "약관이 변경됨다",
+            "pub_date": "2022-09-29T09:03:05.785Z",
+            "delete_date": null,
+            "modify_date": null,
+            "image_exist": 0,
+            "like": 0,
+            "hit": 0,
+            "comments_num": 0,
+            "is_main": 0,
+            "boards_category": 8,
+            "boards_writer": 3
+        }
+    }
+    ]

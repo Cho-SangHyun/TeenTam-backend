@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Boards, Comments, BoardCategories, Likes
-from datetime import datetime, timedelta
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -65,9 +64,6 @@ class CreateBoardSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("wrong category name")
 
         return data
-
-
-
 
 
 class BoardDetailSerializer(serializers.ModelSerializer):
