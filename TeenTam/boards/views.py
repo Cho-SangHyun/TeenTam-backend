@@ -77,9 +77,8 @@ class CreateBoardViewSet(APIView):
 
         return response
 
+
 # 게시글 삭제
-
-
 class DeleteBoardsViewSet(APIView):
 
     def delete(self, request, boards_id):
@@ -182,7 +181,7 @@ class ModifyBoardsViewSet(APIView):
         return response
 
 
-# 게시판 댓글 생성 삭제
+# 게시판 댓글
 class CreateCommentsViewSet(APIView):
 
     def post(self, request):
@@ -212,6 +211,29 @@ class DeleteCommentsViewSet(APIView):
             return response
 
         comment.delete_date = timezone.now()
+        comment.save()
+        response = Response({
+            "message": "delete success",
+        }, status=status.HTTP_200_OK)
+
+        return response
+    
+    
+# 댓글 수정
+class ModifyCommentsViewSet(APIView):
+    
+    def post(self, request, comments_id):
+        
+        comment = Comments.objects.get(id=comments_id)
+        #댓글 수정 시 작성자 확인
+        if comment.comments_writer.id != int(request.data["user_id"]):
+            response = Response({
+                "message": "bad access (user not allowed)",
+            }, status=status.HTTP_403_FORBIDDEN)
+            return response
+        
+        comment.modify_date = timezone.now()
+        comment.content = request.data['content']
         comment.save()
         response = Response({
             "message": "delete success",

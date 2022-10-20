@@ -20,7 +20,7 @@ urlpatterns = [
          views.DeleteCommentsViewSet.as_view(), name="delete-comment"),
     path('like-board/', views.BoardsLikeViewSet.as_view(), name="like-board"),
     path('board-modify/<int:boards_id>/', views.ModifyBoardsViewSet.as_view(), name="modify-board"),
-    
+    path('comment-modify/<int:comments_id>/', views.ModifyCommentsViewSet.as_view(), name="modify-comment"),
     # path('like-comment/', views.CommentsLikeViewSet.as_view(), name="like-comment"),
 
 

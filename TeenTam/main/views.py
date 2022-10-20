@@ -7,4 +7,4 @@ from rest_framework import status
 class MainViewSet(APIView):
     
     def get(self, request):
-        return request
+        return re
