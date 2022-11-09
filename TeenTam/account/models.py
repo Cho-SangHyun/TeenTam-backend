@@ -15,6 +15,9 @@ class User(AbstractUser):
     address = models.CharField(max_length=200, null=True)
     detail_address = models.CharField(max_length=200, null=True)
     phone_number = models.CharField(max_length=15, null=True, unique=True)
+    boards_written = models.IntegerField(default=0)
+    comments_written = models.IntegerField(default=0)
+    
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
