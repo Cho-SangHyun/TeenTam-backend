@@ -2,14 +2,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
+from django.core.paginator import Paginator
 from .models import Boards, Likes
+from account.models import User
 from .serializer import *
 from datetime import datetime, timedelta
 
 # 카테고리별 게시글 목록
 
 
-class BoardListViewSet(APIView):
+class BoardsListViewSet(APIView):
 
     def get(self, request, boards_category):
 
@@ -34,7 +36,7 @@ class BoardListViewSet(APIView):
 
         boards = Boards.objects.raw(sql)
 
-        serializer = BoardListSerializer(boards, many=True)
+        serializer = BoardsListSerializer(boards, many=True)
 
         data = serializer.data
         response = Response({
@@ -66,8 +68,14 @@ class CreateBoardViewSet(APIView):
 
     def post(self, request):
 
-        serializer = CreateBoardSerializer(data=request.data)
+        serializer = CreateBoardsSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
+
+            # 유저 작성 댓글 갯수 갱신
+            user = User.objects.get(id=request.data['user_id'])
+            user.boards_written += 1
+            user.save()
+
             serializer.save()
 
         response = Response({
@@ -77,9 +85,8 @@ class CreateBoardViewSet(APIView):
 
         return response
 
+
 # 게시글 삭제
-
-
 class DeleteBoardsViewSet(APIView):
 
     def delete(self, request, boards_id):
@@ -170,29 +177,67 @@ class ModifyBoardsViewSet(APIView):
             }, status=status.HTTP_403_FORBIDDEN)
             return response
 
-        serializer = ModifyBoardSerializer(board, data=request.data)
+        serializer = ModifyBoardsSerializer(board, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
 
         response = Response({
-            "message": "modified board successfully",
+            "message": "modify board success",
             "boards_id": serializer.data['id']
         })
 
         return response
 
 
-# 게시판 댓글 생성 삭제
+# 키워드 검색
+class SearchBoardsViewSet(APIView):
+
+    def get(self, request):
+
+        page = int(request.GET.get('page'))
+        offset = int(request.GET.get('offset'))
+        order = request.GET.get('order')
+        keyword = request.GET.get('keyword')
+        keyword = keyword.replace("+", " ")
+        print(keyword)
+
+        boards = Boards.objects.filter(Q(title__icontains=keyword) |
+                                       Q(content__icontains=keyword)).distinct().order_by(order)
+        paginator = Paginator(boards, offset)
+        boards_list = paginator.page(page)
+        serializers = BoardsListSerializer(boards_list, many=True)
+        data = serializers.data
+
+        response = Response({
+            "data": data,
+            "message": "search board list success",
+        })
+
+        return response
+
+
+# 댓글 생성
 class CreateCommentsViewSet(APIView):
 
     def post(self, request):
 
         serializer = CreateCommentsSerializer(data=request.data)
         if serializer.is_valid():
+
+            # 유저 작성 댓글 갯수 갱신
+            user = User.objects.get(id=request.data['comments_writer'])
+            user.comments_written += 1
+            user.save()
+
             serializer.save()
 
+        commentsList = Comments.objects.filter(
+            comments_board_id=request.data['comments_board'])
+        commentSerializer = CommentsSerializer(commentsList, many=True)
+
         response = Response({
-            "message": "create comments successfully"
+            "data": commentSerializer.data,
+            "message": "create comment success"
         }, status=status.HTTP_201_CREATED)
 
         return response
@@ -214,20 +259,49 @@ class DeleteCommentsViewSet(APIView):
         comment.delete_date = timezone.now()
         comment.save()
         response = Response({
-            "message": "delete success",
+            "message": "delete comment success",
         }, status=status.HTTP_200_OK)
+
+        return response
+
+
+# 댓글 수정
+class ModifyCommentsViewSet(APIView):
+
+    def post(self, request, comments_id):
+
+        # 작성자 Validation
+        comment = Comments.objects.filter(id=comments_id).first()
+
+        # 작성자와 수정자 불일치
+        if comment.comments_writer.id != int(request.data['user_id']):
+            response = Response({
+                "message": "bad access (user not allowed)",
+            }, status=status.HTTP_403_FORBIDDEN)
+            return response
+
+        serializer = ModifyCommentsSerializer(comment, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
+        response = Response({
+            "message": "modify board success",
+            "boards_id": comment.comments_board_id,
+        })
 
         return response
 
 
 ########################## 부가기능 ############################
 
+# 게시글 좋아요 기능
 class BoardsLikeViewSet(APIView):
 
     def post(self, request):
 
         boards_id = request.data["likes_board"]
         user_id = request.data["likes_user"]
+        # 이미 좋아요 한 사용자 확인
         if Likes.objects.filter(likes_board=boards_id, likes_user=user_id).exists():
             response = Response({
                 "message": "user already like this board"

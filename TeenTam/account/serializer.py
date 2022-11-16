@@ -25,9 +25,10 @@ class SignupSerializer(serializers.ModelSerializer):
 
         # 전화번호 중복 확인
         phone_number = data.get('phone_number')
-        if User.objects.filter(phone_number = phone_number).exists():
-            raise serializers.ValidationError("user phone number already exists")
-            
+        if User.objects.filter(phone_number=phone_number).exists():
+            raise serializers.ValidationError(
+                "user phone number already exists")
+
         return data
 
     def create(self, validated_data):
@@ -88,7 +89,7 @@ class LoginSerializer(serializers.ModelSerializer):
         return data
 
 
-#이메일 찾기
+# 이메일 찾기
 class FindEmailSerializer(serializers.ModelSerializer):
 
     email = serializers.CharField(required=True, write_only=True)
@@ -100,7 +101,7 @@ class FindEmailSerializer(serializers.ModelSerializer):
         fields = ["phone_number", "birth"]
 
     def validate(self, data):
-        
+
         # 전화번호와 생년월일로 식별
         ph_num = data["phone_number"]
         birth = data["birth"]
@@ -118,7 +119,7 @@ class FindEmailSerializer(serializers.ModelSerializer):
         return data
 
 
-#비밀번호 찾기
+# 비밀번호 찾기
 class FindPasswordSerializer(serializers.ModelSerializer):
 
     email = serializers.CharField(required=True, write_only=True)
@@ -134,8 +135,6 @@ class FindPasswordSerializer(serializers.ModelSerializer):
         email = data["email"]
         birth = data["birth"]
         user = User.objects.filter(email=email, birth=birth).first()
-        print(birth)
-        print(user.birth)
 
         if user is None:
             raise serializers.ValidationError("not registered email")
