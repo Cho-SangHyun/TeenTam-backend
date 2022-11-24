@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from .models import Boards, Comments, BoardCategories, Likes
-from django.db.models import Q
-
 
 # 댓글 정보
 class CommentsSerializer(serializers.ModelSerializer):
@@ -15,7 +13,7 @@ class CommentsSerializer(serializers.ModelSerializer):
                   'like', 'pub_date', 'modify_date', 'delete_date']
 
 
-#게시판별 게시글 목록
+# 게시판별 게시글 목록
 class BoardsListSerializer(serializers.ModelSerializer):
 
     username = serializers.CharField(source='boards_writer.username')
@@ -27,6 +25,8 @@ class BoardsListSerializer(serializers.ModelSerializer):
                   'boards_category', 'image_exist', 'id', 'content', 'comments_num']
 
 # 게시글 수정
+
+
 class ModifyBoardsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -43,6 +43,8 @@ class ModifyBoardsSerializer(serializers.ModelSerializer):
         return instance
 
 # 게시글 생성
+
+
 class CreateBoardsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -58,7 +60,7 @@ class CreateBoardsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("wrong category name")
 
         return data
-    
+
 
 # 게시글 상세보기
 class BoardDetailSerializer(serializers.ModelSerializer):
@@ -83,7 +85,6 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         return data
 
 
-
 # 게시판 카테고리
 class BoardCategoriesSerializer(serializers.ModelSerializer):
 
@@ -98,15 +99,17 @@ class BoardCategoriesSerializer(serializers.ModelSerializer):
 class CreateBoardCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        
+
         model = BoardCategories
         fields = ['name', 'description']
 
 # 댓글 생성
+
+
 class CreateCommentsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        
+
         model = Comments
         fields = ['content', 'comments_board', 'comments_writer']
 
@@ -121,6 +124,8 @@ class CreateCommentsSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 # 댓글 수정
+
+
 class ModifyCommentsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -136,6 +141,8 @@ class ModifyCommentsSerializer(serializers.ModelSerializer):
         return instance
 
 # 좋아요 기능
+
+
 class LikesSerializer(serializers.ModelSerializer):
 
     class Meta:

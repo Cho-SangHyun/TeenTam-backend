@@ -7,7 +7,7 @@ from .models import Boards, Likes
 from account.models import User
 from .serializer import *
 from datetime import datetime, timedelta
-
+from django.db.models import Q
 # 카테고리별 게시글 목록
 
 
@@ -72,7 +72,8 @@ class CreateBoardViewSet(APIView):
         if serializer.is_valid(raise_exception=True):
 
             # 유저 작성 댓글 갯수 갱신
-            user = User.objects.get(id=request.data['user_id'])
+            user_id = request.data['user_id']
+            user = User.objects.get(id=user_id)
             user.boards_written += 1
             user.save()
 
@@ -198,11 +199,10 @@ class SearchBoardsViewSet(APIView):
         offset = int(request.GET.get('offset'))
         order = request.GET.get('order')
         keyword = request.GET.get('keyword')
-        keyword = keyword.replace("+", " ")
-        print(keyword)
 
         boards = Boards.objects.filter(Q(title__icontains=keyword) |
                                        Q(content__icontains=keyword)).distinct().order_by(order)
+        boards_num = len(boards)
         paginator = Paginator(boards, offset)
         boards_list = paginator.page(page)
         serializers = BoardsListSerializer(boards_list, many=True)
@@ -210,6 +210,7 @@ class SearchBoardsViewSet(APIView):
 
         response = Response({
             "data": data,
+            "boards_num": boards_num,
             "message": "search board list success",
         })
 
