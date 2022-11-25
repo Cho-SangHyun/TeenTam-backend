@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'account',
     'boards',
     'mypage',
+    'notes',
 ]
 
 
