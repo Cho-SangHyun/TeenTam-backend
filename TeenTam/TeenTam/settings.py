@@ -30,32 +30,33 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-USE_TZ = True
+USE_TZ = False
 TIME_ZONE = 'Asia/Seoul'
 
 # Application definition
 
 INSTALLED_APPS = [
-    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    #django-rest-framework
+
+    # django-rest-framework
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    
-    #cors
+
+    # cors
     'corsheaders',
 
-    #app
+    # app
     'account',
-    'boards', 
-    'web',
+    'boards',
+    'mypage',
+    'notes',
 ]
 
 
@@ -63,10 +64,10 @@ REST_FRAMEWORK = {
     # JWT token authentication
     # https://jpadilla.github.io/django-rest-framework-jwt/
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication', 
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny', # can access all users
+        'rest_framework.permissions.AllowAny',  # can access all users
         # 'rest_framework.permissions.IsAdminUser', # cans access only admin
         # 'rest_framework.permissions.IsAuthenticated', # can access authenticated users
     ),
@@ -74,8 +75,8 @@ REST_FRAMEWORK = {
 
 # Additional JWT Settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120), # Token expire time
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), # Token refresh cycle
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),  # Token expire time
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Token refresh cycle
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': False,
@@ -99,7 +100,7 @@ SIMPLE_JWT = {
     'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
 
     'JTI_CLAIM': 'jti',
-    
+
     # Sliding token setting <Not Using Now>
     # 'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     # 'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
@@ -114,7 +115,6 @@ EMAIL_HOST_USER = 'kccce6567'
 EMAIL_HOST_PASSWORD = 'shquddn970508!'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 
 
 MIDDLEWARE = [

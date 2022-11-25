@@ -28,6 +28,7 @@ class Boards(models.Model):
     hit = models.IntegerField(default=0)
     comments_num = models.IntegerField(default=0)
     is_main = models.SmallIntegerField(default=0)
+    is_anon = models.BooleanField(default=False)
 
     #Foreign key
     boards_category = models.ForeignKey(BoardCategories, related_name='boards', on_delete=models.SET_NULL, null=True)
