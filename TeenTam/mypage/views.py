@@ -10,7 +10,7 @@ from boards.models import Boards
 
 # 마이페이지 메인화면
 class MypageMainViewSet(APIView):
-
+            
     def get(self, request, user_id):
 
         user = User.objects.get(id=user_id)

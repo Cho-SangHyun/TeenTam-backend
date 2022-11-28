@@ -72,7 +72,7 @@ class CreateBoardViewSet(APIView):
         if serializer.is_valid(raise_exception=True):
 
             # 유저 작성 댓글 갯수 갱신
-            user_id = request.data['user_id']
+            user_id = request.data['boards_writer']
             user = User.objects.get(id=user_id)
             user.boards_written += 1
             user.save()
