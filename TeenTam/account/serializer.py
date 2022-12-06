@@ -6,13 +6,13 @@ from django.contrib.auth.hashers import check_password, make_password
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'school', 'grade']
+        fields = ['id', 'email', 'username', 'school', 'grade', 'profile_image']
 
 
 class UserMainSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'school', 'grade', 'boards_written', 'comments_written', ]
+        fields = ['email', 'username', 'school', 'grade', 'boards_written', 'comments_written' ]
 
 class SignupSerializer(serializers.ModelSerializer):
 
@@ -148,3 +148,12 @@ class FindPasswordSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("wrong birth")
 
         return data
+
+
+class ProfileImageSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        
+        model = User
+        fields = ["profile_image"]
+        
