@@ -201,7 +201,7 @@ class SearchBoardsViewSet(APIView):
         keyword = request.GET.get('keyword') # 검색 키워드
         category_name = request.GET.get('category_name') # 카테고리 명 
         writer_name = request.GET.get('writer_name')
-        
+        # print(category_name)
         q = Q()
         # 카테고리 내 검색일 경우
             
@@ -225,7 +225,7 @@ class SearchBoardsViewSet(APIView):
             q |= Q(content__icontains=keyword)
             
             if category_name:
-                category = BoardCategories.objects.get(name=category_name)
+                category = BoardCategories.objects.filter(name=category_name).first()
                 q &= Q(boards_category = category.id)
                 
             boards = Boards.objects.filter(q).distinct().order_by(order)

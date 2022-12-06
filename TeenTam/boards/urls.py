@@ -1,27 +1,33 @@
 from django.urls import path
-from . import views
-
+from boards.views import boards_views, search_views, comments_views, like_views
 
 app_name = "boards"
 
 urlpatterns = [
-    path('<int:boards_category>/', views.BoardsListViewSet.as_view(),
+     # ---------------------- BOARDS ----------------------#
+    path('<int:boards_category>/', boards_views.BoardsListViewSet.as_view(),
          name="boards_list"),  # 게시판
     path('<int:boards_category>/id/<int:boards_id>/',
-         views.BoardDetailViewSet.as_view(), name="boards_detail"),  # 게시글 상세보기
-    path('create-board/', views.CreateBoardViewSet.as_view(), name="create-board"),
-    path('create-board-category/', views.CreateBoardCategoryViewSet.as_view(),
-         name="create-board-category"),
-    path('create-comment/', views.CreateCommentsViewSet.as_view(),
-         name="create-comment"),
+         boards_views.BoardDetailViewSet.as_view(), name="boards_detail"),  # 게시글 상세보기
     path('delete-board/<int:boards_id>/',
-         views.DeleteBoardsViewSet.as_view(), name="delete-board"),
+         boards_views.DeleteBoardsViewSet.as_view(), name="delete-board"),
+    path('create-board/', boards_views.CreateBoardViewSet.as_view(), name="create-board"),
+    path('create-board-category/', boards_views.CreateBoardCategoryViewSet.as_view(),
+         name="create-board-category"),
+    path('board-modify/<int:boards_id>/', boards_views.ModifyBoardsViewSet.as_view(), name="modify-board"),
+    
+     # ---------------------- COMMENTS ----------------------#
+    path('create-comment/', comments_views.CreateCommentsViewSet.as_view(),
+         name="create-comment"),
     path('delete-comment/<int:comments_id>/',
-         views.DeleteCommentsViewSet.as_view(), name="delete-comment"),
-    path('like-board/', views.BoardsLikeViewSet.as_view(), name="like-board"),
-    path('board-modify/<int:boards_id>/', views.ModifyBoardsViewSet.as_view(), name="modify-board"),
-    path('comment-modify/<int:comments_id>/', views.ModifyCommentsViewSet.as_view(), name="modify-comment"),
+         comments_views.DeleteCommentsViewSet.as_view(), name="delete-comment"),
+    path('comment-modify/<int:comments_id>/', comments_views.ModifyCommentsViewSet.as_view(), name="modify-comment"),
+    
+     # ---------------------- LIKES ----------------------# 
+    path('like-board/', like_views.BoardsLikeViewSet.as_view(), name="like-board"),
     # path('like-comment/', views.CommentsLikeViewSet.as_view(), name="like-comment"),
-    path('search-boards/', views.SearchBoardsViewSet.as_view(), name="search_boards_list"),
+    
+     # ---------------------- SEARCH ----------------------# 
+    path('search-boards/', search_views.SearchBoardsViewSet.as_view(), name="search_boards_list"),
     
 ]
