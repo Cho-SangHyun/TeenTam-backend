@@ -29,7 +29,7 @@ urlpatterns = [
          name='token_refresh'),
 
     # app
-    path('/', include('main.urls')),
+    path('main/', include('main.urls')),
     path('account/', include('account.urls')),
     path('boards/', include('boards.urls')),
     path('mypage/', include('mypage.urls')),

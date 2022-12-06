@@ -3,18 +3,19 @@ from rest_framework.response import Response
 from rest_framework import status
 from account.models import User
 from django.core.paginator import Paginator
-from .serializer import *
+from ..serializer import *
+from account.serializer import UserMainSerializer
 from boards.serializer import BoardsListSerializer
 from boards.models import Boards
 
 
 # 마이페이지 메인화면
 class MypageMainViewSet(APIView):
-
+            
     def get(self, request, user_id):
 
         user = User.objects.get(id=user_id)
-        serializer = MypageMainSerializer(user)
+        serializer = UserMainSerializer(user)
         data = serializer.data
 
         response = Response({
