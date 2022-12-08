@@ -21,7 +21,7 @@ class BoardsListSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Boards
-        fields = ['username', 'title', 'hit', 'like', 'pub_date',
+        fields = ['username', 'boards_writer', 'title', 'hit', 'like', 'pub_date',
                   'boards_category', 'image_exist', 'id', 'content', 'comments_num']
 
 # 게시글 수정
