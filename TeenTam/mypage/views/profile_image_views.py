@@ -9,7 +9,7 @@ class UploadProfileImage(APIView):
     def post(self, request):
 
         user_id = request.POST["user_id"]
-        img = request.FILES["profile_img"]
+        img = request.FILES["profile_image"]
         user = User.objects.filter(id=user_id).first()
         
         user.profile_image = img

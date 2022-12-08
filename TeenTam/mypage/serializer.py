@@ -99,10 +99,8 @@ class BookmarkSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         
-        print(data)
         boards_id = data["bookmark_boards_id"]
-        boards = Boards.objects.filter(id=boards_id).first()
-        if not boards or boards.delete_date:
+        if not boards_id : 
             raise serializers.ValidationError("wrong boards_id or deleted board")
         
         return data

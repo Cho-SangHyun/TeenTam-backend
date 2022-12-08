@@ -11,7 +11,7 @@ urlpatterns = [
     path('change-password/', user_info_views.ChangePasswordViewSet.as_view()),
     
     #--------------BOOKMARK--------------#
-    path('bookmark/', bookmark_views.ToggleBookmarkViewSet.as_view()),
+    path('bookmark/', bookmark_views.BookmarkViewSet.as_view()),
     
     #--------------PROFILE IMAGE UPLOAD--------------#
     path('profile-image-upload/', profile_image_views.UploadProfileImage.as_view()),
