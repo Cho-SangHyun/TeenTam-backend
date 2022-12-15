@@ -3,7 +3,7 @@ from account.models import User
 from django.contrib.auth.hashers import check_password
 from django.utils import timezone
 from boards.models import Boards
-from .models import Bookmark    
+from .models import Bookmark
 
 # 마이페이지 메인 화면
 
@@ -86,21 +86,24 @@ class ModifyUserInformationSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = User
-        fields = ['last_name', 'first_name',  
+        fields = ['last_name', 'first_name',
                   'phone_number', 'postcode', 'address', 'detail_address', 'grade']
-        
+
 # 북마크 기능
+
+
 class BookmarkSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
-        
+
         model = Bookmark
         fields = ['bookmark_user_id', 'bookmark_boards_id', 'bookmark_date']
-    
+
     def validate(self, data):
-        
+
         boards_id = data["bookmark_boards_id"]
-        if not boards_id : 
-            raise serializers.ValidationError("wrong boards_id or deleted board")
-        
+        if not boards_id:
+            raise serializers.ValidationError(
+                "wrong boards_id or deleted board")
+
         return data

@@ -6,13 +6,22 @@ from django.contrib.auth.hashers import check_password, make_password
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'school', 'grade', 'profile_image']
+        fields = ['id', 'email', 'username',
+                  'school', 'grade', 'profile_image']
 
 
 class UserMainSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'school', 'grade', 'boards_written', 'comments_written' ]
+        fields = ['email', 'username', 'school', 'grade',
+                  'boards_written', 'comments_written']
+
+
+class UserOnlyUsernameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
 
 class SignupSerializer(serializers.ModelSerializer):
 
@@ -151,9 +160,8 @@ class FindPasswordSerializer(serializers.ModelSerializer):
 
 
 class ProfileImageSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
-        
+
         model = User
         fields = ["profile_image"]
-        

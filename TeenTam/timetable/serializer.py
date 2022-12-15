@@ -23,5 +23,3 @@ class TimeTableSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("wrong school or grade")
         
         return data
-
-
