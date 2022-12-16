@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'mypage',
     'notes',
     'main',
+    'timetable',
 ]
 
 

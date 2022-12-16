@@ -21,7 +21,7 @@ class BoardsListSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Boards
-        fields = ['username', 'title', 'hit', 'like', 'pub_date',
+        fields = ['username', 'boards_writer', 'title', 'hit', 'like', 'pub_date',
                   'boards_category', 'image_exist', 'id', 'content', 'comments_num']
 
 # 게시글 수정
@@ -67,6 +67,7 @@ class BoardDetailSerializer(serializers.ModelSerializer):
 
     comments = CommentsSerializer(many=True, read_only=True)
     writer_username = serializers.CharField(source='boards_writer.username')
+    boards_category_name = serializers.CharField(source="boards_category.name")
     # category_name = BoardCategoriesSerializer(read_only = True)
 
     class Meta:
@@ -74,7 +75,7 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         model = Boards
         fields = ['comments', 'title', 'content', 'pub_date', 'delete_date',
                   'modify_date', 'image_exist', 'like', 'hit', 'comments_num',
-                  'is_main', 'boards_category', 'writer_username', 'boards_writer']
+                  'is_main', 'boards_category', 'boards_category_name', 'writer_username', 'boards_writer']
 
     def validate(self, data):
 
