@@ -29,7 +29,8 @@ class NotesViewSet(APIView):
             sender=user_id).distinct().values_list("receiver")
         receiver_user = Notes.objects.only("sender").filter(
             receiver=user_id).distinct().values_list("sender")
-
+        # print(sender_user.query)
+        # print(receiver_user.query)
         user_values_list = sender_user.union(receiver_user, all=False)
         user_list = []
         for user in user_values_list:

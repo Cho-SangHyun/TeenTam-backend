@@ -33,7 +33,10 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('boards/', include('boards.urls')),
     path('mypage/', include('mypage.urls')),
-    path('notes/', include('notes.urls'))
+    path('notes/', include('notes.urls')),
+    path('timetable/', include('timetable.urls')),
+
+    # path('web/', include('web.urls')),
 
 ]
 urlpatterns += static(settings.MEDIA_URL,
