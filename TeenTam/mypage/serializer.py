@@ -15,7 +15,7 @@ class MypageMainSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'profile_image', 'first_name', 'last_name',
                   'boards_written', 'comments_written']
-
+    
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
 
@@ -87,7 +87,7 @@ class ModifyUserInformationSerializer(serializers.ModelSerializer):
 
         model = User
         fields = ['last_name', 'first_name',
-                  'phone_number', 'postcode', 'address', 'detail_address', 'grade']
+                  'phone_number', 'postcode', 'address', 'detail_address', 'grade', 'school']
 
 # 북마크 기능
 
